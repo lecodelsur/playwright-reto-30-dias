@@ -6,7 +6,7 @@ test('Get all the usernames registered', async ({ page }) => {  //creo mi test y
     await page.getByRole('textbox', { name: 'Password' }).fill('admin123')//en texbox password le pido que complete admin123
     await page.getByRole('button', { name: 'Login' }).click()//en button login le pido que haga click
 
-    
+
     await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible() //aca se espera que cuando se loguee se vea este Admin. 
 
     await page.getByRole('link', { name: 'Admin' }).click() //aca hago click en Admin de la izquierda. 
@@ -28,4 +28,35 @@ test('Get all the usernames registered', async ({ page }) => {  //creo mi test y
         }
     }
     console.log(usernames) //que imprima todos los usuarios que estan en la inferfaz gráfica.
+})
+
+test('Select specific user for edition', async ({ page }) => {
+
+
+    const userForEdition = 'Jobinsam@6742'
+    await page.goto('https://opensource-demo.orangehrmlive.com')
+    await page.getByRole('textbox', { name: 'Username' }).fill('Admin')
+    await page.getByRole('textbox', { name: 'Password' }).fill('admin123')
+    await page.getByRole('button', { name: 'Login' }).click()
+
+
+    await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible()
+
+    await page.getByRole('link', { name: 'Admin' }).click()
+
+    await page.getByRole('navigation', { name: 'Topbar Menu' }).getByText('User Management').click()
+    await page.getByRole('menuitem', { name: 'Users' }).click()
+
+    const pencilToEdit = page
+        .getByRole('table') //Con este filtro obtenemos la tabla (el elemento mas grande que contiene todos)
+        .getByRole('row')  //Con este obtenemos todas las filas o rows
+        .filter({ hasText: userForEdition }) //aca le pido que filtre por el elemento especifico que definí
+        .locator('button') //aca que me devuelva un botón (hay dos asique tengo que especificar cual)
+        .filter({ has: page.locator('i.bi-pencil-fill') }) //aca  le digo que de los dos, me devuelva el que tenga la clase (bi-pencil-fill)
+    await pencilToEdit.click()
+    const currentUsername =  await page.locator("//label[contains(.,'Username')]/parent::div/following-sibling::div/input")
+    .inputValue()
+    //esta forma de localizar solo funciona cuando hay un div parent con dos divs, uno con un label y uno con un input.
+    expect(currentUsername).toEqual(userForEdition)
+    expect(page.locator("//label[contains(.,'Username')]/parent::div/following-sibling::div/input")).toHaveValue(currentUsername)
 })
