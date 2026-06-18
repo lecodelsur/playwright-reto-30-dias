@@ -33,7 +33,7 @@ test('Get all the usernames registered', async ({ page }) => {  //creo mi test y
 test('Select specific user for edition', async ({ page }) => {
 
 
-    const userForEdition = 'Jobinsam@6742'
+
     await page.goto('https://opensource-demo.orangehrmlive.com')
     await page.getByRole('textbox', { name: 'Username' }).fill('Admin')
     await page.getByRole('textbox', { name: 'Password' }).fill('admin123')
@@ -47,6 +47,13 @@ test('Select specific user for edition', async ({ page }) => {
     await page.getByRole('navigation', { name: 'Topbar Menu' }).getByText('User Management').click()
     await page.getByRole('menuitem', { name: 'Users' }).click()
 
+    const rows = page.getByRole('table').getByRole('row') //aca le pido que me guarde en la constante rows 
+    const rowCount = await rows.count() //aca quiero contar cuantas filas hay excluyendo el header
+    const indiceAleatorio: number = Math.floor(Math.random() * (rowCount - 1)) + 1 //aca obtengo un aleatorio menos el primero mas uno
+    const cell = rows.nth(indiceAleatorio).getByRole('cell').nth(1) //para acceder a la celda específica nth es el indice y se le pone 1 porque quiero la segunda columna
+    const userForEdition = await cell.innerText()
+
+
     const pencilToEdit = page
         .getByRole('table') //Con este filtro obtenemos la tabla (el elemento mas grande que contiene todos)
         .getByRole('row')  //Con este obtenemos todas las filas o rows
@@ -54,9 +61,11 @@ test('Select specific user for edition', async ({ page }) => {
         .locator('button') //aca que me devuelva un botón (hay dos asique tengo que especificar cual)
         .filter({ has: page.locator('i.bi-pencil-fill') }) //aca  le digo que de los dos, me devuelva el que tenga la clase (bi-pencil-fill)
     await pencilToEdit.click()
-    const currentUsername =  await page.locator("//label[contains(.,'Username')]/parent::div/following-sibling::div/input")
-    .inputValue()
+    const currentUsername = await page.locator("//label[contains(.,'Username')]/parent::div/following-sibling::div/input")
+        .inputValue()
     //esta forma de localizar solo funciona cuando hay un div parent con dos divs, uno con un label y uno con un input.
     expect(currentUsername).toEqual(userForEdition)
     expect(page.locator("//label[contains(.,'Username')]/parent::div/following-sibling::div/input")).toHaveValue(currentUsername)
+    console.log(userForEdition)
+
 })
