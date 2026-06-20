@@ -1,11 +1,11 @@
 import {expect, test} from '@playwright/test' //primero se importa test desde playwright
+import { LoginPage } from '../pageobjects/LoginPage'
 
 test ('Login to hrm' , async({page})=>{    //aca va el nombre del test y ya podemos comenzar con los pasos
 
-    await page.goto('https://opensource-demo.orangehrmlive.com/')     //1°Le decimos que navegue a esa URL
-    await page.getByRole('textbox', {name:'Username'}).fill('Admin')  //2 Le decimos que en el elemento con el rol texbox que se llama username lo llene con 'Admin'
-    await page.getByRole('textbox', {name: 'Password'}).fill('admin123') //3° Le decimos que en password le ponga admin123
-    await page.getByRole('button', {name: 'Login'}).click()          //4°Le decimos que haga click en el botón login
+    const loginPage = new LoginPage(page)
+    await loginPage.doLogin('Admin','admin123')
+     
 
     await expect(page.getByRole('link',{name: 'Admin'})).toBeVisible()//5°Le decimos que espere que el elemento link admin sea visible
 
@@ -23,10 +23,9 @@ test ('Empty fields @login', async({page})=>{
 
 test ('Invalid credentials @login', async({page})=> {
 
-    await page.goto('https://opensource-demo.orangehrmlive.com/')     //1°Le decimos que navegue a esa URL
-    await page.getByRole('textbox', {name:'Username'}).fill('Admin')  //2 Le decimos que en el elemento con el rol texbox que se llama username lo llene con 'Admin'
-    await page.getByRole('textbox', {name: 'Password'}).fill('admin') //3° Le decimos que en password le ponga una contraseña incorrecta, en este caso admin
-    await page.getByRole('button', {name: 'Login'}).click()          //4°Le decimos que haga click en el botón login
+    const loginPage = new LoginPage(page)
+    await loginPage.doLogin('Admin','admin123')
+         //4°Le decimos que haga click en el botón login
 
     await expect(page.getByRole('alert')).toBeVisible               //5°Le decimos que espere el rol alert
     await expect(page.getByRole('alert')).toHaveText('Invalid credentials')//6°Le decimos que espero el rol alert y el el texto "invalid credentials"

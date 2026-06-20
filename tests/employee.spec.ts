@@ -1,10 +1,9 @@
 import { expect, test } from "@playwright/test"//importo test de playwright test
+import { LoginPage } from "../pageobjects/LoginPage"
 test('Get all the employee names', async ({ page }) => {  //creo mi test y le doy un nombre
 
-    await page.goto('https://opensource-demo.orangehrmlive.com')    //voy a la URl
-    await page.getByRole('textbox', { name: 'Username' }).fill('Admin') //en texbox usuario le pido que complete con Admin
-    await page.getByRole('textbox', { name: 'Password' }).fill('admin123')//en texbox password le pido que complete admin123
-    await page.getByRole('button', { name: 'Login' }).click()//en button login le pido que haga click
+    const loginPage = new LoginPage(page)
+    await loginPage.doLogin('Admin','admin123')
 
     
     await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible() //aca se espera que cuando se loguee se vea este Admin. 

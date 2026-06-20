@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test'
+import { LoginPage } from '../pageobjects/LoginPage'
 
 test('Check left menu options', async ({ page }) => {
 
-    await page.goto('https://opensource-demo.orangehrmlive.com/')
-    await page.getByRole('textbox', { name: 'Username' }).fill('Admin')
-    await page.getByRole('textbox', { name: 'Password' }).fill('admin123')
-    await page.getByRole('button', { name: 'Login' }).click()
+    const loginPage = new LoginPage(page)
+    await loginPage.doLogin('Admin','admin123')
+
 
     await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible()
     const leftMenuItems = page.getByLabel('Sidepanel').getByRole('listitem')
@@ -55,10 +55,9 @@ test('check all the qualifications link', async ({ page }) => {
 
 
     ]
-    await page.goto('https://opensource-demo.orangehrmlive.com/')
-    await page.getByRole('textbox', { name: 'Username' }).fill('Admin')
-    await page.getByRole('textbox', { name: 'Password' }).fill('admin123')
-    await page.getByRole('button', { name: 'Login' }).click()
+    const loginPage = new LoginPage(page)
+    await loginPage.doLogin('Admin','admin123')
+
 
     await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible()
     await page.getByRole('link', { name: 'Admin' }).click()
@@ -93,10 +92,9 @@ test('check all the organization link', async ({ page }) => {
 
 
     ]
-    await page.goto('https://opensource-demo.orangehrmlive.com/')
-    await page.getByRole('textbox', { name: 'Username' }).fill('Admin')
-    await page.getByRole('textbox', { name: 'Password' }).fill('admin123')
-    await page.getByRole('button', { name: 'Login' }).click()
+    const loginPage = new LoginPage(page)
+    await loginPage.doLogin('Admin','admin123')
+
 
     await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible()
     await page.getByRole('link', { name: 'Admin' }).click()
