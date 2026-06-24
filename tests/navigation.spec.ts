@@ -4,7 +4,7 @@ import { LoginPage } from '../pageobjects/LoginPage'
 test('Check left menu options', async ({ page }) => {
 
     const loginPage = new LoginPage(page)
-    await loginPage.doLogin('Admin','admin123')
+    await loginPage.loginAsAdmin()
 
 
     await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible()

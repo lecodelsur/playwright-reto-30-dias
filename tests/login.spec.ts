@@ -5,7 +5,7 @@ import { SideMenuOption, SidePanel } from '../components/SidePanels'
 test('Login to hrm', async ({ page }) => {    //aca va el nombre del test y ya podemos comenzar con los pasos
     //aca creamos el componente para interactual loginPage
     const loginPage = new LoginPage(page)
-    await loginPage.doLogin('Admin', 'admin123')
+    await loginPage.loginAsAdmin()
     //aca creamos el otro componente sidePanel
     const sidePanel = new SidePanel(page)
     await sidePanel.clickOnOption(SideMenuOption.ADMIN)
@@ -54,3 +54,11 @@ test('Invalid credentials @login', async ({ page }) => {
     await expect(page.getByRole('alert')).toHaveText('Invalid credentials')//6°Le decimos que espero el rol alert y el el texto "invalid credentials"
 })
 
+test('Login as Employee', async ({ page }) => {//este tiene que pinchar porque no tiene que encontrar admin pero si se tiene que loguear con esas credenciales
+    const loginPage = new LoginPage(page)
+    await loginPage.loginAsEmployee()
+
+await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible()
+
+
+})
