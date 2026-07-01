@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { LoginPage } from '../pageobjects/LoginPage'
+import { TopBarMenu } from '../components/top-bar-menu/TopBarMenu'
+import { SideMenuOption, SidePanel } from '../components/SidePanel'
 
 test('Check left menu options', async ({ page }) => {
 
@@ -110,4 +112,22 @@ test('check all the organization link', async ({ page }) => {
 
         await page.getByRole('navigation', { name: 'Topbar Menu' }).getByText('Organization').click()
     }
+})
+
+test('testing topbar menu', async ({ page }) => {
+
+const loginPage = new LoginPage(page)
+await loginPage.loginAsAdmin()
+
+const sidepanel = new SidePanel(page)
+await sidepanel.clickOnOption(SideMenuOption.ADMIN)
+
+const topBarMenu = new TopBarMenu(page)
+await topBarMenu.job.clickOnJobTitles()
+await topBarMenu.job.clickOnPayGrades()
+await topBarMenu.job.clickOnEmployementStatus()
+await topBarMenu.job.clickOnJobCategories()
+await topBarMenu.job.clickOnWorkShifts()
+
+await topBarMenu.userManagement.clickOnUsers()
 })

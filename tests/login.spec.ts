@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test' //primero se importa test desde playwright
 import { LoginPage } from '../pageobjects/LoginPage'
-import { SideMenuOption, SidePanel } from '../components/SidePanels'
+import { SideMenuOption, SidePanel } from '../components/SidePanel'
 
 test('Login to hrm', async ({ page }) => {    //aca va el nombre del test y ya podemos comenzar con los pasos
     //aca creamos el componente para interactual loginPage
