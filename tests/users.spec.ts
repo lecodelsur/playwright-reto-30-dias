@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test"//importo test de playwright test
-import { LoginPage } from "../pageobjects/LoginPage"
+import {  LoginPage } from "../pageobjects/LoginPage"
+import { SideMenuOption, SidePanel } from "../components/SidePanel"
 test('Get all the usernames registered', async ({ page }) => {  //creo mi test y le doy un nombre
 
     
@@ -66,4 +67,40 @@ test('Select specific user for edition', async ({ page }) => {
     expect(page.locator("//label[contains(.,'Username')]/parent::div/following-sibling::div/input")).toHaveValue(currentUsername)
     console.log(userForEdition)
 
+})
+
+test ('Check user role options', async({page}) => {
+
+    const expectedRoleOptions = [ '-- Select --', 'Admin', 'ESS' ] //aca tomo de los resultado lo que quiero que me traiga 
+
+    const loginPage = new LoginPage(page)
+    await loginPage.loginAsAdmin()
+
+    const sidePanel = new SidePanel(page)
+    await sidePanel.clickOnOption(SideMenuOption.ADMIN) //aca le digo que clickee en el botón de admin definido en SideMenuOption
+
+    await page.locator("//label[contains(.,'User Role')]/parent::div/following-sibling::div").click() //aca encuentra el sisguiente elemento por path
+    const currentUserRoleOptions = await page.getByRole('listbox').getByRole('option').allInnerTexts()
+
+    console.log(currentUserRoleOptions)
+    expect(currentUserRoleOptions, 'The options displayed in the User Role Dropdown do not match the expected options.').toEqual(expectedRoleOptions)
+    
+})
+
+test ('Check Status options', async({page}) => {
+
+    const expectedStatusOptions = [ '-- Select --', 'Enabled', 'Disabled' ] //aca tomo de los resultado lo que quiero que me traiga 
+
+    const loginPage = new LoginPage(page)
+    await loginPage.loginAsAdmin()
+
+    const sidePanel = new SidePanel(page)
+    await sidePanel.clickOnOption(SideMenuOption.ADMIN) //aca le digo que clickee en el botón de admin definido en SideMenuOption
+
+    await page.locator("//label[contains(.,'Status')]/parent::div/following-sibling::div").click() //aca encuentra el sisguiente elemento por path
+    const currentSatusOptions = await page.getByRole('listbox').getByRole('option').allInnerTexts()
+
+    console.log(currentSatusOptions)
+    expect(currentSatusOptions, 'The options displayed in the Status Dropdown do not match the expected options.').toEqual(expectedStatusOptions)
+    
 })
