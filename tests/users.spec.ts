@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test"//importo test de playwright test
-import {  LoginPage } from "../pageobjects/LoginPage"
+import { LoginPage } from "../pageobjects/LoginPage"
 import { SideMenuOption, SidePanel } from "../components/SidePanel"
 test('Get all the usernames registered', async ({ page }) => {  //creo mi test y le doy un nombre
 
-    
+
     const loginPage = new LoginPage(page)
-    await loginPage.doLogin('Admin','admin123')
+    await loginPage.doLogin('Admin', 'admin123')
 
     await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible() //aca se espera que cuando se loguee se vea este Admin. 
 
@@ -35,7 +35,7 @@ test('Select specific user for edition', async ({ page }) => {
 
 
     const loginPage = new LoginPage(page)
-    await loginPage.doLogin('Admin','admin123')
+    await loginPage.doLogin('Admin', 'admin123')
 
 
 
@@ -69,9 +69,9 @@ test('Select specific user for edition', async ({ page }) => {
 
 })
 
-test ('Check user role options', async({page}) => {
+test('Check user role options', async ({ page }) => {
 
-    const expectedRoleOptions = [ '-- Select --', 'Admin', 'ESS' ] //aca tomo de los resultado lo que quiero que me traiga 
+    const expectedRoleOptions = ['-- Select --', 'Admin', 'ESS'] //aca tomo de los resultado lo que quiero que me traiga 
 
     const loginPage = new LoginPage(page)
     await loginPage.loginAsAdmin()
@@ -84,12 +84,12 @@ test ('Check user role options', async({page}) => {
 
     console.log(currentUserRoleOptions)
     expect(currentUserRoleOptions, 'The options displayed in the User Role Dropdown do not match the expected options.').toEqual(expectedRoleOptions)
-    
+
 })
 
-test ('Check Status options', async({page}) => {
+test('Check Status options', async ({ page }) => {
 
-    const expectedStatusOptions = [ '-- Select --', 'Enabled', 'Disabled' ] //aca tomo de los resultado lo que quiero que me traiga 
+    const expectedStatusOptions = ['-- Select --', 'Enabled', 'Disabled'] //aca tomo de los resultado lo que quiero que me traiga 
 
     const loginPage = new LoginPage(page)
     await loginPage.loginAsAdmin()
@@ -102,5 +102,43 @@ test ('Check Status options', async({page}) => {
 
     console.log(currentSatusOptions)
     expect(currentSatusOptions, 'The options displayed in the Status Dropdown do not match the expected options.').toEqual(expectedStatusOptions)
-    
+
 })
+
+test('Filter by user admin', async ({ page }) => {
+
+    const loginPage = new LoginPage(page)
+    await loginPage.loginAsAdmin()
+
+    const sidePanel = new SidePanel(page)
+    await sidePanel.clickOnOption(SideMenuOption.ADMIN)
+//aca le digo que de la tabla traiga la fila a partir de la 2°
+    const allBodyRows = page.getByRole('table').getByRole('rowgroup').nth(1).getByRole('row')
+
+    //aca trae todas filas que contienen el role admin
+    const currentAdminRows = allBodyRows.filter({
+        has: page.getByRole('cell').nth(2).getByText('Admin')
+
+    })
+    //aca cuenta el número de los administradores
+    const expectedAdminCount = await currentAdminRows.count()
+    console.log('Admin users before filtering: ', expectedAdminCount)
+
+    //aca se aplica el filtro
+    await page.locator("//label[contains(.,'User Role')]/parent::div/following-sibling::div").click()
+    await page.getByRole("listbox").getByRole('option', { name: 'Admin' }).click()
+    await page.getByRole('button', {name:'Search'}).click()
+
+    //La tabla filtrada deberia tener exactamente la misma cantidad que encontramos
+
+    await expect(allBodyRows).toHaveCount(expectedAdminCount)
+
+
+    for(let i=0; i<expectedAdminCount; i++){
+
+        await expect(allBodyRows.nth(i).getByRole('cell').nth(2)).toContainText('Admin')
+    }
+
+
+})
+
