@@ -4,10 +4,10 @@ import { defineConfig, devices } from '@playwright/test';
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
- import dotenv from 'dotenv';
- import path from 'path';
- dotenv.config({ path: path.resolve(__dirname, '.env') });
- //para hacer uso de dotenv hice en cmd "npm install dotenv"
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+//para hacer uso de dotenv hice en cmd "npm install dotenv"
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -30,13 +30,36 @@ export default defineConfig({
     baseURL: 'https://opensource-demo.orangehrmlive.com',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-      launchOptions:{
-        slowMo: 1000
-      }
+    launchOptions: {
+      slowMo: 1000
+    }
   },
 
   /* Configure projects for major browsers */
+  /*tambien configura una expresion regular para que ejecute el setup manualmente agregado */
+
   projects: [
+    {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+    {
+      name: 'admin',
+      dependencies: ['setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: '.auth/admin.json'
+      },
+    },
+     {
+      name: 'employee',
+      dependencies: ['setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: '.auth/employee.json'
+      },
+    }, 
+
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },

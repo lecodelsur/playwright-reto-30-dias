@@ -4,8 +4,12 @@ import { SideMenuOption, SidePanel } from '../components/SidePanel'
 
 test('Login to hrm', async ({ page }) => {    //aca va el nombre del test y ya podemos comenzar con los pasos
     //aca creamos el componente para interactual loginPage
-    const loginPage = new LoginPage(page)
-    await loginPage.loginAsAdmin()
+    /* const loginPage = new LoginPage(page)
+    await loginPage.loginAsAdmin() //lo comento para hacer el auth del dia 13 */
+
+    await page.goto("/web/index.php/dashboard/index") 
+    
+
     //aca creamos el otro componente sidePanel
     const sidePanel = new SidePanel(page)
     await sidePanel.clickOnOption(SideMenuOption.ADMIN)
@@ -28,7 +32,7 @@ test('search admin in search box', async ({ page }) => {//aca se resuelve el eje
     await loginPage.doLogin('Admin', 'admin123')
 
     const searchBox = await page.getByRole('textbox', { name: 'Search' }).fill('Admin')
-    await expect(page.getByText('Admin')).toBeVisible  
+    await expect(page.getByText('Admin')).toBeVisible
 
 
 })
@@ -58,7 +62,7 @@ test('Login as Employee', async ({ page }) => {//este tiene que pinchar porque n
     const loginPage = new LoginPage(page)
     await loginPage.loginAsEmployee()
 
-await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible()
 
 
 })
