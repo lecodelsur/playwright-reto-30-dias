@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test"//importo test de playwright test
 import { LoginPage } from "../pageobjects/LoginPage"
 import { SideMenuOption, SidePanel } from "../components/SidePanel"
+import { array } from "node:stream/iter"
 test('Get all the usernames registered', async ({ page }) => {  //creo mi test y le doy un nombre
 
 
@@ -142,3 +143,49 @@ test('Filter by user admin', async ({ page }) => {
 
 })
 
+test ('Capture all amounts', async({page}) =>{
+
+await page.goto('/web/index.php/claim/viewAssignClaim')
+
+const allBodyRows = page.getByRole('table').getByRole('rowgroup').nth(1).getByRole('row')
+// allbodyrows guarda toooooda la table
+const amounts: number[] = []
+//amounts guarda un array de números
+const rowCount = await allBodyRows.count()
+// rowCount cuenta cuantas rows hay
+console.log('number of rows', rowCount)
+
+for (let i=0; i<rowCount; i++){
+
+const amountCell = allBodyRows.nth(i).getByRole('cell').nth(7)
+const amountText = await amountCell.textContent()
+console.log("This is the amount in text format: ",amountText)
+    if(amountText === null){
+        continue
+    }
+    const convertedNumber = parseFloat (amountText?.replace(/,/g, '').trim())
+    amounts.push(convertedNumber)
+}
+console.log(amounts)
+
+
+let total = 0
+let valorMaximo = 0 
+let valorMinimo = 0
+let valorPromedio =  0
+
+for(let amount of amounts){
+    valorMinimo = Math.min(valorMinimo,amount) // Me quedo con el valor minimo entre el minimo anterior y el valor actual
+    valorMaximo = Math.max(valorMaximo,amount) // Me quedo con el valor máximo entre el minimo anterior y el valor actual    
+    total += amount
+}
+console.log( "total is", total)
+
+if(amounts.length > 0){ //se fija que no sea cero porque no se puede dividir por cero
+    valorPromedio = total / amounts.length //asi se saca el promedio
+}
+
+console.log("Este es el valor máximo", valorMaximo)
+console.log("Este es el valor mínimo", valorMinimo)
+console.log("Este es el valor promedio", valorPromedio)
+})

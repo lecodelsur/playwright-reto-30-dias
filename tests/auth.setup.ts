@@ -22,7 +22,6 @@ console.log('Atenticación completada usando el setup')
 })
 
 /*
-
 setup ('authentication as employee', async({page}) =>{ 
 
 console.log('Autenticacion de employee iniciada usando el setup')
@@ -40,3 +39,4 @@ await page.context().storageState({path: '.auth/employee.json'})
 
 console.log('Atenticación de employee completada usando el setup')
 })
+*/
