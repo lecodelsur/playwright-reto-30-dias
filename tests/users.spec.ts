@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test"//importo test de playwright test
 import { LoginPage } from "../pageobjects/LoginPage"
 import { SideMenuOption, SidePanel } from "../components/SidePanel"
-import { array } from "node:stream/iter"
+import { TopBarMenu } from "../components/Top-Bar-Menu/TopBarMenu"
 test('Get all the usernames registered', async ({ page }) => {  //creo mi test y le doy un nombre
 
 
@@ -113,7 +113,7 @@ test('Filter by user admin', async ({ page }) => {
 
     const sidePanel = new SidePanel(page)
     await sidePanel.clickOnOption(SideMenuOption.ADMIN)
-//aca le digo que de la tabla traiga la fila a partir de la 2°
+    //aca le digo que de la tabla traiga la fila a partir de la 2°
     const allBodyRows = page.getByRole('table').getByRole('rowgroup').nth(1).getByRole('row')
 
     //aca trae todas filas que contienen el role admin
@@ -128,14 +128,14 @@ test('Filter by user admin', async ({ page }) => {
     //aca se aplica el filtro
     await page.locator("//label[contains(.,'User Role')]/parent::div/following-sibling::div").click()
     await page.getByRole("listbox").getByRole('option', { name: 'Admin' }).click()
-    await page.getByRole('button', {name:'Search'}).click()
+    await page.getByRole('button', { name: 'Search' }).click()
 
     //La tabla filtrada deberia tener exactamente la misma cantidad que encontramos
 
     await expect(allBodyRows).toHaveCount(expectedAdminCount)
 
 
-    for(let i=0; i<expectedAdminCount; i++){
+    for (let i = 0; i < expectedAdminCount; i++) {
 
         await expect(allBodyRows.nth(i).getByRole('cell').nth(2)).toContainText('Admin')
     }
@@ -143,49 +143,102 @@ test('Filter by user admin', async ({ page }) => {
 
 })
 
-test ('Capture all amounts', async({page}) =>{
+test('Capture all amounts', async ({ page }) => {
 
-await page.goto('/web/index.php/claim/viewAssignClaim')
+    await page.goto('/web/index.php/claim/viewAssignClaim')
 
-const allBodyRows = page.getByRole('table').getByRole('rowgroup').nth(1).getByRole('row')
-// allbodyrows guarda toooooda la table
-const amounts: number[] = []
-//amounts guarda un array de números
-const rowCount = await allBodyRows.count()
-// rowCount cuenta cuantas rows hay
-console.log('number of rows', rowCount)
+    const allBodyRows = page.getByRole('table').getByRole('rowgroup').nth(1).getByRole('row')
+    // allbodyrows guarda toooooda la table
+    const amounts: number[] = []
+    //amounts guarda un array de números
+    const rowCount = await allBodyRows.count()
+    // rowCount cuenta cuantas rows hay
+    console.log('number of rows', rowCount)
 
-for (let i=0; i<rowCount; i++){
+    for (let i = 0; i < rowCount; i++) {
 
-const amountCell = allBodyRows.nth(i).getByRole('cell').nth(7)
-const amountText = await amountCell.textContent()
-console.log("This is the amount in text format: ",amountText)
-    if(amountText === null){
-        continue
+        const amountCell = allBodyRows.nth(i).getByRole('cell').nth(7)
+        const amountText = await amountCell.textContent()
+        console.log("This is the amount in text format: ", amountText)
+        if (amountText === null) {
+            continue
+        }
+        const convertedNumber = parseFloat(amountText?.replace(/,/g, '').trim())
+        amounts.push(convertedNumber)
     }
-    const convertedNumber = parseFloat (amountText?.replace(/,/g, '').trim())
-    amounts.push(convertedNumber)
-}
-console.log(amounts)
+    console.log(amounts)
 
 
-let total = 0
-let valorMaximo = 0 
-let valorMinimo = 0
-let valorPromedio =  0
+    let total = 0
+    let valorMaximo = 0
+    let valorMinimo = 0
+    let valorPromedio = 0
 
-for(let amount of amounts){
-    valorMinimo = Math.min(valorMinimo,amount) // Me quedo con el valor minimo entre el minimo anterior y el valor actual
-    valorMaximo = Math.max(valorMaximo,amount) // Me quedo con el valor máximo entre el minimo anterior y el valor actual    
-    total += amount
-}
-console.log( "total is", total)
+    for (let amount of amounts) {
+        valorMinimo = Math.min(valorMinimo, amount) // Me quedo con el valor minimo entre el minimo anterior y el valor actual
+        valorMaximo = Math.max(valorMaximo, amount) // Me quedo con el valor máximo entre el minimo anterior y el valor actual    
+        total += amount
+    }
+    console.log("total is", total)
 
-if(amounts.length > 0){ //se fija que no sea cero porque no se puede dividir por cero
-    valorPromedio = total / amounts.length //asi se saca el promedio
-}
+    if (amounts.length > 0) { //se fija que no sea cero porque no se puede dividir por cero
+        valorPromedio = total / amounts.length //asi se saca el promedio
+    }
 
-console.log("Este es el valor máximo", valorMaximo)
-console.log("Este es el valor mínimo", valorMinimo)
-console.log("Este es el valor promedio", valorPromedio)
+    console.log("Este es el valor máximo", valorMaximo)
+    console.log("Este es el valor mínimo", valorMinimo)
+    console.log("Este es el valor promedio", valorPromedio)
+})
+
+test('Add new user', async ({ page }) => {
+
+    const reandomUsername = 'Leco' + crypto.randomUUID()
+    const password = 'R4mdom45..+'
+    const employeeToSearch = 'Qwerty LName'
+
+    await page.goto('/web/index.php/dashboard/index')
+
+    const sidePanel = new SidePanel(page)
+    await sidePanel.clickOnOption(SideMenuOption.ADMIN)
+
+    const topBarMenu = new TopBarMenu(page)
+    await topBarMenu.userManagement.clickOnUsers()
+
+    await page.getByText('Add').click()
+
+    await page.locator('div.oxd-grid-item--gutters')
+        .filter({ has: page.getByText('User Role') })
+        .locator('div.oxd-select-text-input')
+        .click()
+
+    await page.getByText('ESS', { exact: true }).click()
+
+    await page.getByRole('textbox', { name: 'Type for hints...' }).fill(employeeToSearch)
+    await page.getByText('Qwerty Qwerty LName', { exact: true }).click()
+
+    await page.locator('div.oxd-grid-item--gutters')
+        .filter({ has: page.getByText('Status') })
+        .locator('div.oxd-select-text-input')
+        .click()
+
+    await page.getByText('Enabled').click()
+
+  await page.locator('div.oxd-grid-item--gutters')
+        .filter({ has: page.getByText('Username') })
+        .getByRole('textbox')
+        .fill(reandomUsername)
+
+  await page.locator('div.oxd-grid-item--gutters')
+        .filter({ has: page.getByText('Password', {exact: true}) })
+        .getByRole('textbox')
+        .fill(password)
+
+  await page.locator('div.oxd-grid-item--gutters')
+        .filter({ has: page.getByText('Confirm Password', {exact: true}) })
+        .getByRole('textbox')
+        .fill(password)
+//Le doy al botón save
+await page.getByRole('button', {name: 'Save'}).click()
+//validacion
+await expect(page.locator('p.oxd-text--toast-message')).toHaveText('Successfully Saved')
 })
