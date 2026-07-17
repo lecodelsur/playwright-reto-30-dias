@@ -2,6 +2,8 @@ import { expect, test } from "@playwright/test"//importo test de playwright test
 import { LoginPage } from "../pageobjects/LoginPage"
 import { SideMenuOption, SidePanel } from "../components/SidePanel"
 import { TopBarMenu } from "../components/Top-Bar-Menu/TopBarMenu"
+import { Navigate } from "../pageobjects/Navigate"
+import { AddNewUserPage } from "../pageobjects/AddNewUserPage"
 test('Get all the usernames registered', async ({ page }) => {  //creo mi test y le doy un nombre
 
 
@@ -192,11 +194,13 @@ test('Capture all amounts', async ({ page }) => {
 
 test('Add new user', async ({ page }) => {
 
-    const reandomUsername = 'Leco' + crypto.randomUUID()
-    const password = 'R4mdom45..+'
+    const randomUsername = 'Leco' + crypto.randomUUID()
+    const password = 'R4mdom45..*'
     const employeeToSearch = 'Qwerty LName'
-
-    await page.goto('/web/index.php/dashboard/index')
+    /* await page.goto('/web/index.php/dashboard/index') 
+    se reemplaza por el const navigate */
+    const navigate = new Navigate(page)
+    await navigate.toDashboard()
 
     const sidePanel = new SidePanel(page)
     await sidePanel.clickOnOption(SideMenuOption.ADMIN)
@@ -204,41 +208,14 @@ test('Add new user', async ({ page }) => {
     const topBarMenu = new TopBarMenu(page)
     await topBarMenu.userManagement.clickOnUsers()
 
-    await page.getByText('Add').click()
-
-    await page.locator('div.oxd-grid-item--gutters')
-        .filter({ has: page.getByText('User Role') })
-        .locator('div.oxd-select-text-input')
-        .click()
-
-    await page.getByText('ESS', { exact: true }).click()
-
-    await page.getByRole('textbox', { name: 'Type for hints...' }).fill(employeeToSearch)
-    await page.getByText('Qwerty Qwerty LName', { exact: true }).click()
-
-    await page.locator('div.oxd-grid-item--gutters')
-        .filter({ has: page.getByText('Status') })
-        .locator('div.oxd-select-text-input')
-        .click()
-
-    await page.getByText('Enabled').click()
-
-  await page.locator('div.oxd-grid-item--gutters')
-        .filter({ has: page.getByText('Username') })
-        .getByRole('textbox')
-        .fill(reandomUsername)
-
-  await page.locator('div.oxd-grid-item--gutters')
-        .filter({ has: page.getByText('Password', {exact: true}) })
-        .getByRole('textbox')
-        .fill(password)
-
-  await page.locator('div.oxd-grid-item--gutters')
-        .filter({ has: page.getByText('Confirm Password', {exact: true}) })
-        .getByRole('textbox')
-        .fill(password)
-//Le doy al botón save
-await page.getByRole('button', {name: 'Save'}).click()
-//validacion
-await expect(page.locator('p.oxd-text--toast-message')).toHaveText('Successfully Saved')
+    const addNewUserPage = new AddNewUserPage(page)
+    await addNewUserPage.clickOnAdd()
+//aca movimos el seleccionar el role
+    await addNewUserPage.selectUserRole('ESS')
+    await addNewUserPage.selectEmployeeName(employeeToSearch)
+    await addNewUserPage.selectStatus('Enabled')
+    await addNewUserPage.enterUserName(randomUsername)
+    await addNewUserPage.enterPassword(password)
+    await addNewUserPage.enterConfirmPassword(password)
+//Le doy al botón save (deprecado, esta en addNewUserPAge.ts)
 })
