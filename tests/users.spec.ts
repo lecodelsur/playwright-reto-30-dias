@@ -217,5 +217,7 @@ test('Add new user', async ({ page }) => {
     await addNewUserPage.enterUserName(randomUsername)
     await addNewUserPage.enterPassword(password)
     await addNewUserPage.enterConfirmPassword(password)
+    await addNewUserPage.clickOnSave()
+    await addNewUserPage.checkUserWasAddedMessage()
 //Le doy al botón save (deprecado, esta en addNewUserPAge.ts)
 })
