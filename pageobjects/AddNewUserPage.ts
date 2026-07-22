@@ -1,4 +1,5 @@
 import { Page, expect } from "@playwright/test"
+import { UserModel } from "../models/UserModel"
 
 export class AddNewUserPage {
 
@@ -52,8 +53,31 @@ export class AddNewUserPage {
         await this.page.getByRole('button', { name: 'Save' }).click()
     }
     async checkUserWasAddedMessage() {
-        //validacion
+        //validacion de si se agregó el usuario
         await expect(this.page.locator('p.oxd-text--toast-message'))
             .toHaveText('Successfully Saved')
     }
+    //aca agrege el nuevo metodo AddNewUser con las acciones de bajo nivel
+    //tambien UserModel que es un Data Transfer Objecto o DTO
+    async addNewUser(user: UserModel) {
+        await this.clickOnAdd()
+        await this.selectUserRole(user.role)
+        await this.selectEmployeeName(user.employee)
+        await this.selectStatus(user.status)
+        await this.enterUserName(user.username)
+        await this.enterPassword(user.password)
+        await this.enterConfirmPassword(user.confirmPassword)
+        await this.clickOnSave()
+
+    }
+    /* async addInvalidUser(user: UserModel){
+        await this.selectUserRole(user.role)
+         await this.selectEmployeeName(user.employee)
+         await this.selectStatus(user.status)
+         await this.enterUserName(user.username)
+         await this.enterPassword(user.password)
+         await this.enterConfirmPassword(user.confirmpassword)
+         await this.clickOnSave()
+     } */
+
 }
