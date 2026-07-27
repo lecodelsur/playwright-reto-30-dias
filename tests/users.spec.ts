@@ -5,6 +5,7 @@ import { TopBarMenu } from "../components/Top-Bar-Menu/TopBarMenu"
 import { Navigate } from "../pageobjects/Navigate"
 import { AddNewUserPage } from "../pageobjects/AddNewUserPage"
 import { UserModel } from "../models/UserModel"
+import { UserFactory } from "../factory/UserFactory"
 test('Get all the usernames registered', async ({ page }) => {  //creo mi test y le doy un nombre
 
 
@@ -195,7 +196,7 @@ test('Capture all amounts', async ({ page }) => {
 
 test('Add new user', async ({ page }) => {
 
-    const randomUsername = 'Leco' + crypto.randomUUID()
+    /*const randomUsername = 'Leco' + crypto.randomUUID()
     const password = 'R4mdom45..*'
     const employeeToSearch = 'Qwerty LName'
     /* await page.goto('/web/index.php/dashboard/index') 
@@ -209,16 +210,20 @@ test('Add new user', async ({ page }) => {
     const topBarMenu = new TopBarMenu(page)
     await topBarMenu.userManagement.clickOnUsers()
 //creo un objeto que sea del tipo addNewUser
-const userToAdd :UserModel= {
+/*const userToAdd :UserModel= {
     username:randomUsername,
     employee:employeeToSearch,
     confirmPassword:password,
     password: password,
     role: 'ESS',
     status: 'Enabled'
-}
+}*/
+const adminUser = UserFactory.createAdmin({
+    employee: 'manda akhil user'
+})
+
     const addNewUserPage = new AddNewUserPage(page)
-    await addNewUserPage.addNewUser(userToAdd)
+    await addNewUserPage.addNewUser(adminUser)
     await addNewUserPage.checkUserWasAddedMessage()
 //Le doy al botón save (deprecado, esta en addNewUserPAge.ts)
 

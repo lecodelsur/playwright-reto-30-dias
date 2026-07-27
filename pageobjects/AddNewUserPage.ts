@@ -17,12 +17,13 @@ export class AddNewUserPage {
             .locator('div.oxd-select-text-input')
             .click()
         //y aca en vez de directamente hardcodearle "ESS" le pido el valor que pasa por el método
-        await this.page.getByText(userRole, { exact: true }).click()
+        //await this.page.getByText(userRole, { exact: true }).click() refactorizado en DIA 18
+        await this.page.getByRole('option', {name:userRole}).click()
     }
     async selectEmployeeName(employeeName: string) {
         await this.page.getByRole('textbox', { name: 'Type for hints...' })
             .fill(employeeName)
-        await this.page.getByText('Qwerty Qwerty LName', { exact: true }).click()
+        await this.page.getByText(employeeName, { exact: true }).click()
     }
     async selectStatus(status: string) {
         await this.page.locator('div.oxd-grid-item--gutters')
