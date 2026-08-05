@@ -194,13 +194,8 @@ test('Capture all amounts', async ({ page }) => {
     console.log("Este es el valor promedio", valorPromedio)
 })
 
-test('Add new user', async ({ page }) => {
+test('Add new user admin', async ({ page }) => {
 
-    /*const randomUsername = 'Leco' + crypto.randomUUID()
-    const password = 'R4mdom45..*'
-    const employeeToSearch = 'Qwerty LName'
-    /* await page.goto('/web/index.php/dashboard/index') 
-    se reemplaza por el const navigate */
     const navigate = new Navigate(page)
     await navigate.toDashboard()
 
@@ -209,23 +204,32 @@ test('Add new user', async ({ page }) => {
 
     const topBarMenu = new TopBarMenu(page)
     await topBarMenu.userManagement.clickOnUsers()
-//creo un objeto que sea del tipo addNewUser
-/*const userToAdd :UserModel= {
-    username:randomUsername,
-    employee:employeeToSearch,
-    confirmPassword:password,
-    password: password,
-    role: 'ESS',
-    status: 'Enabled'
-}*/
-const adminUser = UserFactory.createAdmin({
-    employee: 'manda akhil user'
-})
 
+    const allBodyRows = page.getByRole('table').getByRole('rowgroup').nth(1).getByRole('row')
+
+    //Filas que contienen el role admin
+    const currentAdminRows = allBodyRows.filter({
+        has: page.getByRole('cell').nth(2).getByText('Admin')
+
+    })
+
+    const firstAdmintToSearch = currentAdminRows.nth(0)
+    await expect(firstAdmintToSearch, "No admin user found in the table").toHaveCount(1)
+
+    await firstAdmintToSearch
+        .locator('button')
+        .filter({ has: page.locator('i.bi-pencil-fill') }).click()
+
+    const fullUserToSearch = await page.getByRole('textbox', { name: 'Type for hints...' }).inputValue()
+    console.log(`User to search ${fullUserToSearch}`)
+
+    const adminUser = UserFactory.createAdmin({
+        employee: fullUserToSearch
+    })
+
+    await page.goBack()
     const addNewUserPage = new AddNewUserPage(page)
     await addNewUserPage.addNewUser(adminUser)
     await addNewUserPage.checkUserWasAddedMessage()
-//Le doy al botón save (deprecado, esta en addNewUserPAge.ts)
-
 
 })
