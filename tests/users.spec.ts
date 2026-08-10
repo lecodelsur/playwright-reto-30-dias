@@ -233,3 +233,43 @@ test('Add new user admin', async ({ page }) => {
     await addNewUserPage.checkUserWasAddedMessage()
 
 })
+
+test('Add new user ESS', async ({ page }) => {
+
+    const navigate = new Navigate(page)
+    await navigate.toDashboard()
+
+    const sidePanel = new SidePanel(page)
+    await sidePanel.clickOnOption(SideMenuOption.ADMIN)
+
+    const topBarMenu = new TopBarMenu(page)
+    await topBarMenu.userManagement.clickOnUsers()
+
+    const allBodyRows = page.getByRole('table').getByRole('rowgroup').nth(1).getByRole('row')
+
+    //Filas que contienen el role admin
+    const currentAdminRows = allBodyRows.filter({
+        has: page.getByRole('cell').nth(2).getByText('ESS')
+
+    })
+
+    const firstAdmintToSearch = currentAdminRows.nth(0)
+    await expect(firstAdmintToSearch, "No ESS user found in the table").toHaveCount(1)
+
+    await firstAdmintToSearch
+        .locator('button')
+        .filter({ has: page.locator('i.bi-pencil-fill') }).click()
+
+    const fullUserToSearch = await page.getByRole('textbox', { name: 'Type for hints...' }).inputValue()
+    console.log(`User to search ${fullUserToSearch}`)
+
+    const adminUser = UserFactory.createEss({
+        employee: fullUserToSearch
+    })
+
+    await page.goBack()
+    const addNewUserPage = new AddNewUserPage(page)
+    await addNewUserPage.addNewUser(adminUser)
+    await addNewUserPage.checkUserWasAddedMessage()
+
+})

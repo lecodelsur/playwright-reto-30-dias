@@ -29,4 +29,7 @@ static createDisableAdmin(overrides?: Partial<UserModel>){
     return this.base({role: 'Admin', status: 'Disabled',...(overrides ||{})})
 
 }
+static createEss (overrides?: Partial<UserModel>){
+    return this.base({role:'ESS', ...(overrides ||{})})
+}
 }
